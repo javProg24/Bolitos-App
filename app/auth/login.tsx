@@ -2,14 +2,16 @@ import { auth } from "@/lib/firebase";
 import { isValidEmail } from "@/utils/validate";
 import { useRouter } from "expo-router";
 import {
-  sendPasswordResetEmail,
-  signInWithEmailAndPassword,
+  signInWithEmailAndPassword
 } from "firebase/auth";
 import { useState } from "react";
 import {
   ActivityIndicator,
   Alert,
+  KeyboardAvoidingView,
+  Platform,
   Pressable,
+  ScrollView,
   Text,
   TextInput,
   View,
@@ -18,6 +20,7 @@ import {
 export default function LoginScreen() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   /**
    * The `onLogin` function handles user login by validating input, signing in with email and password,
@@ -67,79 +70,84 @@ export default function LoginScreen() {
   screens or routes within the application, such as redirecting to the registration screen when the
   corresponding button is pressed. */
   const router = useRouter();
-  // Send to another screen to reset password, or show a modal to enter email and send the email from there
-  //Part 3
-  const onResetPassword = async () => {
-    if (!email.trim())
-      return Alert.alert(
-        "Falta email",
-        "Ingresa tu email para restablecer tu contraseña",
-      );
-    try {
-      setLoading(true);
-      await sendPasswordResetEmail(auth, email.trim());
-      Alert.alert(
-        "Correo enviado",
-        "Revisa tu correo para restablecer tu contraseña",
-      );
-    } catch (e: any) {
-      Alert.alert("Error al enviar correo", e?.message ?? "Ocurrio un error");
-    } finally {
-      setLoading(false);
-    }
-  };
   return (
-    <View style={{ padding: 16, gap: 12, flex: 1, justifyContent: "center" }}>
-      <Text style={{ fontSize: 30, fontWeight: "800" }}>Bolitos</Text>
-      <Text style={{ opacity: 0.6 }}>Inicia sesión o regístrate</Text>
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}>
+      <ScrollView
+        keyboardShouldPersistTaps="handled"
+        contentContainerStyle={{
+          flexGrow: 1,
+          justifyContent: "center",
+          padding: 16,
+        }}>
+        <View style={{ gap: 12 }}>
+          <Text style={{ fontSize: 30, fontWeight: "800" }}>Bolitos</Text>
+          <Text style={{ opacity: 0.6 }}>Inicia sesión o regístrate</Text>
 
-      <TextInput
-        placeholder="Email"
-        autoCapitalize="none"
-        keyboardType="email-address"
-        value={email}
-        onChangeText={setEmail}
-        style={{ borderWidth: 1, padding: 12, borderRadius: 12 }}
-      />
-      <TextInput
-        placeholder="Contraseña"
-        secureTextEntry
-        value={password}
-        onChangeText={setPassword}
-        style={{ borderWidth: 1, padding: 12, borderRadius: 12 }}
-      />
-      <Pressable
-        onPress={onLogin}
-        disabled={loading}
-        style={{
-          padding: 14,
-          borderWidth: 1,
-          borderRadius: 12,
-          alignItems: "center",
-          opacity: loading ? 0.6 : 1,
-        }}>
-        {loading ? <ActivityIndicator /> : <Text>Entrar</Text>}
-      </Pressable>
-      <Pressable
-        onPress={() => router.push("/auth/register")}
-        disabled={loading}
-        style={{
-          padding: 14,
-          borderWidth: 1,
-          borderRadius: 12,
-          alignItems: "center",
-          opacity: loading ? 0.6 : 1,
-        }}>
-        <Text>Crear cuenta</Text>
-      </Pressable>
-      <Pressable
-        onPress={() => router.push("/auth/resetPassword")}
-        disabled={loading}
-        style={{ padding: 10, alignItems: "center" }}>
-        <Text style={{ textDecorationLine: "underline" }}>
-          Olvide mi contraseña
-        </Text>
-      </Pressable>
-    </View>
+          <TextInput
+            placeholder="Email"
+            autoCapitalize="none"
+            keyboardType="email-address"
+            value={email}
+            onChangeText={setEmail}
+            style={{ borderWidth: 1, padding: 12, borderRadius: 12 }}
+          />
+          <View
+            style={{
+              borderWidth: 1,
+              borderRadius: 12,
+              flexDirection: "row",
+              alignItems: "center",
+              paddingLeft: 12,
+            }}>
+            <TextInput
+              placeholder="Contraseña"
+              secureTextEntry={!showPassword}
+              value={password}
+              onChangeText={setPassword}
+              style={{ flex: 1, paddingVertical: 12 }}
+            />
+            <Pressable
+              onPress={() => setShowPassword((value) => !value)}
+              style={{ paddingHorizontal: 12, paddingVertical: 12 }}>
+              <Text>{showPassword ? "Ocultar" : "Ver"}</Text>
+            </Pressable>
+          </View>
+          <Pressable
+            onPress={onLogin}
+            disabled={loading}
+            style={{
+              padding: 14,
+              borderWidth: 1,
+              borderRadius: 12,
+              alignItems: "center",
+              opacity: loading ? 0.6 : 1,
+            }}>
+            {loading ? <ActivityIndicator /> : <Text>Entrar</Text>}
+          </Pressable>
+          <Pressable
+            onPress={() => router.push("/auth/register")}
+            disabled={loading}
+            style={{
+              padding: 14,
+              borderWidth: 1,
+              borderRadius: 12,
+              alignItems: "center",
+              opacity: loading ? 0.6 : 1,
+            }}>
+            <Text>Crear cuenta</Text>
+          </Pressable>
+          <Pressable
+            onPress={() => router.push("/auth/resetPassword")}
+            disabled={loading}
+            style={{ padding: 10, alignItems: "center" }}>
+            <Text style={{ textDecorationLine: "underline" }}>
+              Olvide mi contraseña
+            </Text>
+          </Pressable>
+        </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 }
