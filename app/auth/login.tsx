@@ -1,11 +1,11 @@
 import { auth } from "@/lib/firebase";
-import { router } from "expo-router";
+import { isValidEmail } from "@/utils/validate";
+import { useRouter } from "expo-router";
 import {
-  createUserWithEmailAndPassword,
   sendPasswordResetEmail,
   signInWithEmailAndPassword,
 } from "firebase/auth";
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -19,10 +19,6 @@ export default function LoginScreen() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const isValidEmail = (email: string) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-  };
   /**
    * The `onLogin` function handles user login by validating input, signing in with email and password,
    * and displaying appropriate alerts for success or error.
@@ -63,25 +59,16 @@ export default function LoginScreen() {
       setLoading(false);
     }
   };
-  //Part 2
-  const onRegister = async () => {
-    if (!email.trim() || !password)
-      return Alert.alert("Falta info", "Ingresa tu email y contraseña");
-    if (password.length < 6)
-      return Alert.alert(
-        "Contraseña insegura",
-        "La contraseña debe tener al menos 6 caracteres",
-      );
-    try {
-      setLoading(true);
-      await createUserWithEmailAndPassword(auth, email.trim(), password);
-      router.replace("/users");
-    } catch (e: any) {
-      Alert.alert("Error al registrar", e?.message ?? "Ocurrio un error");
-    } finally {
-      setLoading(false);
-    }
-  };
+  //Part 2.
+  // Crear un panel de registro en otra pantalla o mostrar un modal para ingresar email y contraseña y registrar desde ahí
+  /* `const router = useRouter();` is creating a router instance using the `useRouter` hook provided by
+  the "expo-router" library. This hook allows you to access the router object and perform navigation
+  actions within your React components. In this specific case, it is used to navigate to different
+  screens or routes within the application, such as redirecting to the registration screen when the
+  corresponding button is pressed. */
+  const router = useRouter();
+  // Send to another screen to reset password, or show a modal to enter email and send the email from there
+  //Part 3
   const onResetPassword = async () => {
     if (!email.trim())
       return Alert.alert(
@@ -130,12 +117,11 @@ export default function LoginScreen() {
           borderRadius: 12,
           alignItems: "center",
           opacity: loading ? 0.6 : 1,
-        }}
-      >
+        }}>
         {loading ? <ActivityIndicator /> : <Text>Entrar</Text>}
       </Pressable>
       <Pressable
-        onPress={onRegister}
+        onPress={() => router.push("/auth/register")}
         disabled={loading}
         style={{
           padding: 14,
@@ -143,15 +129,13 @@ export default function LoginScreen() {
           borderRadius: 12,
           alignItems: "center",
           opacity: loading ? 0.6 : 1,
-        }}
-      >
+        }}>
         <Text>Crear cuenta</Text>
       </Pressable>
       <Pressable
         onPress={onResetPassword}
         disabled={loading}
-        style={{ padding: 10, alignItems: "center" }}
-      >
+        style={{ padding: 10, alignItems: "center" }}>
         <Text style={{ textDecorationLine: "underline" }}>
           Olvide mi contraseña
         </Text>
