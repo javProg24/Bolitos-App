@@ -133,7 +133,7 @@ export default function LoginScreen() {
         <Text>Crear cuenta</Text>
       </Pressable>
       <Pressable
-        onPress={onResetPassword}
+        onPress={() => router.push("/auth/resetPassword")}
         disabled={loading}
         style={{ padding: 10, alignItems: "center" }}>
         <Text style={{ textDecorationLine: "underline" }}>
