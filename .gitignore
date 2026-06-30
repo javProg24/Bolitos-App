@@ -1,3 +1,11 @@
-backend/node_modules/
+@"
+    backend/node_modules/
+    .env
+    .env.local
+    supabase/.temp/
+    supabase/.branches/
+    .DS_Store
+    Thumbs.db
+"@ | Set-Content .gitignore
 frontend/bolitos-client/node_modules/
 frontend/bolitos-admin/node_modules/
