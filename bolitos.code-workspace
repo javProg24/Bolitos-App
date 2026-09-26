@@ -1,0 +1,12 @@
+{
+  "folders": [
+  { "name": "backend", "path": "backend" },
+  { "name": "bolitos-client", "path": "frontend/bolitos-client" },
+  { "name": "bolitos-admin", "path": "frontend/bolitos-admin" },
+  { "name": "documentation", "path": "documentation" }
+],
+  "settings": {
+    "editor.formatOnSave": true,
+    "deno.enable": true
+  }
+}
