@@ -49,3 +49,4 @@ Thumbs.db
 
 # Misc (heredado de la plantilla Expo — confirmar si aplica)
 example
+backend/supabase/snippets/
